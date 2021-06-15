@@ -53,6 +53,7 @@ extern "C" void mount_ceph_get_config_info(const char *config_file,
 
   for (const auto& mon : monc.monmap.addr_mons) {
     auto& eaddr = mon.first;
+    std::cout << "---------- Family (ipv6: " << AF_INET6 << ", ipv4: " << AF_INET << "): " << eaddr.u.sa.sa_family << ", IP: " << eaddr.ip_only_to_str() << ", Port: " << std::to_string(eaddr.get_port()) << std::endl;
 
     /*
      * Filter v1 addrs if we're running in ms_mode=legacy. Filter

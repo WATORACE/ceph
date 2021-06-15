@@ -55,6 +55,7 @@ char *resolve_addrs(const char *orig_str)
   char *buf = strdup(orig_str);
   const char *delim = ",; ";
 
+  printf("----------------- orig_str: %s\n", orig_str);
   char *tok = strtok_r(buf, delim, &saveptr);
 
   int pos = 0;
@@ -73,10 +74,12 @@ char *resolve_addrs(const char *orig_str)
     char *port_str = 0;
     if (firstcolon && firstcolon == lastcolon) {
       /* host:port or a.b.c.d:port */
+    printf("----------------- ipv4\n");
       *firstcolon = 0;
       port_str = firstcolon + 1;
     } else if (bracecolon) {
       /* [ipv6addr]:port */
+    printf("----------------- ipv6\n");
       port_str = bracecolon + 1;
       *port_str = 0;
       port_str++;
@@ -91,7 +94,7 @@ char *resolve_addrs(const char *orig_str)
       brackets = 1;
     }
 
-    //printf("name '%s' port '%s'\n", tok, port_str);
+    printf("----------------- name '%s' port '%s'\n", tok, port_str);
 
     // FIPS zeroization audit 20191115: this memset is fine.
     memset(&hint, 0, sizeof(hint));
