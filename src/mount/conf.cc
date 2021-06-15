@@ -53,7 +53,13 @@ extern "C" void mount_ceph_get_config_info(const char *config_file,
       continue;
 
     std::string addr;
+    if (eaddr.u.sa.sa_family == AF_INET6) {
+      addr += "[";
+    }
     addr += eaddr.ip_only_to_str();
+    if (eaddr.u.sa.sa_family == AF_INET6) {
+      addr += "]";
+    }
     addr += ":";
     addr += std::to_string(eaddr.get_port());
     /* If this will overrun cci_mons, stop here */
