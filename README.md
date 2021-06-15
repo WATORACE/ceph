@@ -1,3 +1,14 @@
+# `mount.ceph` with ipv6 configuration fix (v15.2.11 patch)
+
+`compiled/mount.ceph` is generated (after following compilation instructions and compiling with `make mount.ceph -j <numcores>`) using the following script:
+
+```bash
+mkdir compiled
+cp build/bin/mount.ceph compiled
+# replace the dynamic library with the one that came with ceph 15.2.11
+patchelf --replace-needed libceph-common.so.2 /usr/lib/x86_64-linux-gnu/ceph/libceph-common.so.2 compiled/mount.ceph
+```
+
 # Ceph - a scalable distributed storage system
 
 Please see http://ceph.com/ for current info.
