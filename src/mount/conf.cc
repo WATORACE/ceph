@@ -27,9 +27,8 @@ extern "C" void mount_ceph_get_config_info(const char *config_file,
   KeyRing keyring;
   CryptoKey secret;
   std::string secret_str;
-  std::string monaddrs;
+  ostringstream oss;
   vector<const char *> args = { "--name", name };
-  bool first = true;
 
   if (config_file) {
     args.push_back("--conf");
@@ -67,26 +66,17 @@ extern "C" void mount_ceph_get_config_info(const char *config_file,
 	continue;
     }
 
-    std::string addr;
-    if (eaddr.u.sa.sa_family == AF_INET6) {
-      addr += "[";
-    }
-    addr += eaddr.ip_only_to_str();
-    if (eaddr.u.sa.sa_family == AF_INET6) {
-      addr += "]";
-    }
-    addr += ":";
-    addr += std::to_string(eaddr.get_port());
-    /* If this will overrun cci_mons, stop here */
-    if (monaddrs.length() + 1 + addr.length() + 1 > sizeof(cci->cci_mons))
+    /*
+     * If this will overrun cci_mons, stop here. one +1 is for the comma and
+     * the other is for the null terminator.
+     */
+    if (oss.tellp() + 1 + eaddr.get_sockaddr_len() + 1 > sizeof(cci->cci_mons))
       break;
 
-    if (first)
-      first = false;
-    else
-      monaddrs += ",";
-
-    monaddrs += addr;
+    if (oss.tellp() > 0) {
+      oss << ",";
+    }
+    oss << eaddr.get_sockaddr();
   }
 
   if (monaddrs.length())
